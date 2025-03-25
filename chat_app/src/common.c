@@ -1,41 +1,33 @@
-#include "common.h"
-#include <ifaddrs.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/socket.h>
 
-void error_exit(const char *message) {
-    perror(message);
-    exit(EXIT_FAILURE);
-}
+void show_myip() {
+    char hostbuffer[256];
+    struct hostent *host_entry;
+    char *IPbuffer;
 
-void show_my_ip() {
-    struct ifaddrs *ifaddr, *ifa;
-    char host[NI_MAXHOST];
-
-    if (getifaddrs(&ifaddr) == -1) {
-        perror("getifaddrs");
+    // Get the hostname
+    if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1) {
+        perror("gethostname failed");
         return;
     }
 
-    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET) {
-            struct sockaddr_in *sa = (struct sockaddr_in *)ifa->ifa_addr;
-            inet_ntop(AF_INET, &sa->sin_addr, host, NI_MAXHOST);
-            printf("[INFO] My IP: %s\n", host);
-            break;
-        }
+    // Get host information
+    host_entry = gethostbyname(hostbuffer);
+    if (host_entry == NULL) {
+        perror("gethostbyname failed");
+        return;
     }
 
-    freeifaddrs(ifaddr);
-}
-
-void show_myport(int port) {
-    printf("Listening on port: %d\n", port);
-}
-
-void show_help() {
-    printf("\nAvailable Commands:\n");
-    printf("help       - Show this help message\n");
-    printf("myip       - Show the IP address of this machine\n");
-    printf("connect <destination> <port> - Connect to a peer\n");
-    printf("exit       - Disconnect all peers and close the program\n\n");
+    // Convert the first address in the list to a readable string
+    IPbuffer = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
+    if (IPbuffer) {
+        printf("My IP Address: %s\n", IPbuffer);
+    } else {
+        printf("Failed to retrieve IP address\n");
+    }
 }

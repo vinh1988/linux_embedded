@@ -1,84 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 #include "server.h"
 
-/* Function prototypes */
-void error_exit(const char *message);
-void handle_client(int client_socket);
-void start_server(void);
+#define BUFFER_SIZE 1024
 
-/* Main entry point */
-int main(void) {
-    start_server();
-    return 0;
-}
+void start_server(int port) {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
 
-/* Initialize and run the server */
-void start_server(void) {
-    int server_fd;
-    int client_socket;
-    struct sockaddr_in server_addr;
-    struct sockaddr_in client_addr;
-    socklen_t addr_size;
-    
-    /* Initialize socket */
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd == -1) {
-        error_exit("Socket creation failed");
+
+    char buffer[BUFFER_SIZE] = {0};
+
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket failed");
+        exit(EXIT_FAILURE);
     }
 
-    /* Configure server address */
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
-
-    /* Bind socket */
-    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        error_exit("Bind failed");
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
+        perror("setsockopt failed");
+        exit(EXIT_FAILURE);
     }
 
-    /* Listen for connections */
-    if (listen(server_fd, 5) < 0) {
-        error_exit("Listen failed");
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(port);
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
     }
 
-    printf("[INFO] Server listening on port %d...\n", PORT);
-
-    /* Accept and handle client connections */
-    addr_size = sizeof(client_addr);
-    while (1) {
-        client_socket = accept(server_fd, (struct sockaddr *)&client_addr, &addr_size);
-        if (client_socket < 0) {
-            perror("[ERROR] Client accept failed");
-            continue;
-        }
-
-        printf("[INFO] Connection established with %s:%d\n",
-               inet_ntoa(client_addr.sin_addr), 
-               ntohs(client_addr.sin_port));
-
-        handle_client(client_socket);
+    if (listen(server_fd, 3) < 0) {
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
     }
 
-    close(server_fd);
-}
+    printf("Server listening on port %d...\n", port);
 
-/* Handle communication with a connected client */
-void handle_client(int client_socket) {
-    char buffer[BUFFER_SIZE];
-    int bytes_received;
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
+        perror("Accept failed");
+        exit(EXIT_FAILURE);
+    }
 
+    printf("Client connected!\n");
+    // Chat loop
     while (1) {
         memset(buffer, 0, BUFFER_SIZE);
-        bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
-        
-        if (bytes_received <= 0) {
-            printf("[INFO] Client disconnected.\n");
+        int valread = read(new_socket, buffer, BUFFER_SIZE);
+        if (valread <= 0) {
+            printf("Client disconnected.\n");
             break;
         }
 
-        printf("[Client]: %s\n", buffer);
-        send(client_socket, buffer, bytes_received, 0);
-    }
+        printf("Client: %s\n", buffer);
 
-    close(client_socket);
+        // Exit chat if client sends "exit"
+        if (strncmp(buffer, "exit", 4) == 0) {
+            printf("Client exited the chat.\n");
+            break;
+        }
+
+        // Send response
+        char response[BUFFER_SIZE];
+        printf("Server: ");
+        fgets(response, BUFFER_SIZE, stdin);
+        send(new_socket, response, strlen(response), 0);
+    }
+    close(new_socket);
+    close(server_fd);
 }

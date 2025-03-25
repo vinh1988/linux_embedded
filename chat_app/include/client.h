@@ -1,8 +1,6 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "common.h"
-
-void start_client(const char *server_ip, int port);
+void connect_to_server(const char *ip, int port);
 
 #endif

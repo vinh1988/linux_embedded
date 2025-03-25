@@ -1,40 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 #include "client.h"
 
-void start_client(const char *server_ip, int port) {
+#define BUFFER_SIZE 1024
+
+void connect_to_server(const char *ip, int port) {
     int sock;
-    struct sockaddr_in server_addr;
-    char buffer[BUFFER_SIZE];
+    struct sockaddr_in serv_addr;
+    char buffer[BUFFER_SIZE] = {0};  // Initialize buffer
 
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) error_exit("Socket creation failed");
+    // ✅ Removed duplicate struct declaration
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("Socket creation error\n");
+        return;
+    }
 
-    if (inet_pton(AF_INET, server_ip, &server_addr.sin_addr) <= 0)
-        error_exit("Invalid address");
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
 
-    if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-        error_exit("Connection failed");
+    if (inet_pton(AF_INET, ip, &serv_addr.sin_addr) <= 0) {
+        printf("Invalid address / Address not supported\n");
+        return;
+    }
 
-    printf("[INFO] Connected to server %s:%d\n", server_ip, port);
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        printf("Connection failed\n");
+        return;
+    }
 
+    printf("Connected to server at %s:%d\n", ip, port);
+
+    // Chat loop
     while (1) {
-        printf("[You]: ");
+        printf("You: ");
         fgets(buffer, BUFFER_SIZE, stdin);
         send(sock, buffer, strlen(buffer), 0);
+
+        // Exit if user types "exit"
+        if (strncmp(buffer, "exit", 4) == 0) {
+            printf("Exiting chat...\n");
+            break;
+        }
+
         memset(buffer, 0, BUFFER_SIZE);
-        recv(sock, buffer, BUFFER_SIZE, 0);
-        printf("[Server]: %s", buffer);
+        int valread = read(sock, buffer, BUFFER_SIZE);
+        if (valread <= 0) {
+            printf("Server disconnected.\n");
+            break;
+        }
+
+        printf("Server: %s", buffer);
     }
     close(sock);
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        printf("Usage: %s <server_ip> <port>\n", argv[0]);
-        return EXIT_FAILURE;
-    }
-    start_client(argv[1], atoi(argv[2]));
-    return 0;
-}

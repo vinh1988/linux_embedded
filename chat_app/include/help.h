@@ -2,7 +2,6 @@
 #define HELP_H
 
 void print_help();
-void show_myip();
-void show_myport();
+void show_myport(int port);  // Make sure this is declared
 
-#endif // HELP_H
+#endif
