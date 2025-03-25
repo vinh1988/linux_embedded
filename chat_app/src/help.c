@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include "help.h"
+#include "../include/help.h"
 
 #define PORT 8080  // Change as needed
 

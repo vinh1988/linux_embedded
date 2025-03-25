@@ -28,6 +28,10 @@ void show_my_ip() {
     freeifaddrs(ifaddr);
 }
 
+void show_myport(int port) {
+    printf("Listening on port: %d\n", port);
+}
+
 void show_help() {
     printf("\nAvailable Commands:\n");
     printf("help       - Show this help message\n");
