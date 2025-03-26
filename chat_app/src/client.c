@@ -3,16 +3,52 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include "client.h"
 
 #define BUFFER_SIZE 1024
 
+// Function to get the local IP address
+void get_local_ip(char *buffer, size_t size) {
+    struct sockaddr_in serv;
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    
+    if (sock == -1) {
+        perror("Socket error");
+        return;
+    }
+
+    serv.sin_family = AF_INET;
+    serv.sin_port = htons(80);  // Use a common external port
+    serv.sin_addr.s_addr = inet_addr("8.8.8.8");  // Google's DNS server
+
+    connect(sock, (struct sockaddr *)&serv, sizeof(serv));
+
+    struct sockaddr_in local_address;
+    socklen_t addr_len = sizeof(local_address);
+    getsockname(sock, (struct sockaddr *)&local_address, &addr_len);
+
+    close(sock);
+
+    inet_ntop(AF_INET, &local_address.sin_addr, buffer, size);
+}
+
+// Function to connect to a server
 void connect_to_server(const char *ip, int port) {
     int sock;
     struct sockaddr_in serv_addr;
-    char buffer[BUFFER_SIZE] = {0};  // Initialize buffer
+    char buffer[BUFFER_SIZE] = {0};
 
-    // ✅ Removed duplicate struct declaration
+    // Get local IP
+    char local_ip[INET_ADDRSTRLEN];
+    get_local_ip(local_ip, sizeof(local_ip));
+
+    // Check if connecting to itself
+    if (strcmp(ip, local_ip) == 0) {
+        printf("Error: Attempted self-connection. Exiting.\n");
+        return;
+    }
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("Socket creation error\n");
@@ -40,7 +76,6 @@ void connect_to_server(const char *ip, int port) {
         fgets(buffer, BUFFER_SIZE, stdin);
         send(sock, buffer, strlen(buffer), 0);
 
-        // Exit if user types "exit"
         if (strncmp(buffer, "exit", 4) == 0) {
             printf("Exiting chat...\n");
             break;
@@ -57,4 +92,3 @@ void connect_to_server(const char *ip, int port) {
     }
     close(sock);
 }
-
