@@ -8,12 +8,13 @@
 #include "client.h"
 
 #define BUFFER_SIZE 1024
-#define MAX_CONNECTIONS 10  // Max tracked connections
+#define MAX_CONNECTIONS 10  // Maximum tracked connections
 
-// Store active connections
+// Struct to store active connections
 typedef struct {
     char ip[INET_ADDRSTRLEN];
     int port;
+    int sock;  // Socket descriptor
 } Connection;
 
 Connection active_connections[MAX_CONNECTIONS];
@@ -55,14 +56,45 @@ int is_duplicate_connection(const char *ip, int port) {
 }
 
 // Function to add a new connection
-void add_connection(const char *ip, int port) {
+void add_connection(const char *ip, int port, int sock) {
     if (conn_count < MAX_CONNECTIONS) {
         strcpy(active_connections[conn_count].ip, ip);
         active_connections[conn_count].port = port;
+        active_connections[conn_count].sock = sock;
         conn_count++;
     } else {
         printf("Warning: Max connections reached, unable to track more.\n");
     }
+}
+
+// Function to list all active connections
+void list_connections() {
+    if (conn_count == 0) {
+        printf("No active connections.\n");
+    } else {
+        printf("Active connections:\n");
+        for (int i = 0; i < conn_count; i++) {
+            printf("%d. %s:%d\n", i + 1, active_connections[i].ip, active_connections[i].port);
+        }
+    }
+}
+
+// Function to terminate a connection by ID
+void terminate_connection(int id) {
+    if (id < 1 || id > conn_count) {
+        printf("Error: Invalid connection ID.\n");
+        return;
+    }
+
+    int index = id - 1;
+    close(active_connections[index].sock);  // Close socket
+    printf("Terminated connection to %s:%d\n", active_connections[index].ip, active_connections[index].port);
+
+    // Shift the remaining connections
+    for (int i = index; i < conn_count - 1; i++) {
+        active_connections[i] = active_connections[i + 1];
+    }
+    conn_count--;
 }
 
 // Function to connect to a server
@@ -106,12 +138,30 @@ void connect_to_server(const char *ip, int port) {
     }
 
     printf("Connected to server at %s:%d\n", ip, port);
-    add_connection(ip, port); // Store connection
+    add_connection(ip, port, sock); // Store connection
 
     // Chat loop
     while (1) {
         printf("You: ");
         fgets(buffer, BUFFER_SIZE, stdin);
+
+        // If the user types "list", show all active connections
+        if (strncmp(buffer, "list", 4) == 0) {
+            list_connections();
+            continue;
+        }
+
+        // If the user types "terminate <id>", close the connection
+        if (strncmp(buffer, "terminate", 9) == 0) {
+            int id;
+            if (sscanf(buffer, "terminate %d", &id) == 1) {
+                terminate_connection(id);
+            } else {
+                printf("Usage: terminate <connection id>\n");
+            }
+            continue;
+        }
+
         send(sock, buffer, strlen(buffer), 0);
 
         if (strncmp(buffer, "exit", 4) == 0) {
