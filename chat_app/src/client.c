@@ -8,6 +8,16 @@
 #include "client.h"
 
 #define BUFFER_SIZE 1024
+#define MAX_CONNECTIONS 10  // Max tracked connections
+
+// Store active connections
+typedef struct {
+    char ip[INET_ADDRSTRLEN];
+    int port;
+} Connection;
+
+Connection active_connections[MAX_CONNECTIONS];
+int conn_count = 0;
 
 // Function to get the local IP address
 void get_local_ip(char *buffer, size_t size) {
@@ -20,8 +30,8 @@ void get_local_ip(char *buffer, size_t size) {
     }
 
     serv.sin_family = AF_INET;
-    serv.sin_port = htons(80);  // Use a common external port
-    serv.sin_addr.s_addr = inet_addr("8.8.8.8");  // Google's DNS server
+    serv.sin_port = htons(80);
+    serv.sin_addr.s_addr = inet_addr("8.8.8.8");
 
     connect(sock, (struct sockaddr *)&serv, sizeof(serv));
 
@@ -32,6 +42,27 @@ void get_local_ip(char *buffer, size_t size) {
     close(sock);
 
     inet_ntop(AF_INET, &local_address.sin_addr, buffer, size);
+}
+
+// Function to check if a connection already exists
+int is_duplicate_connection(const char *ip, int port) {
+    for (int i = 0; i < conn_count; i++) {
+        if (strcmp(active_connections[i].ip, ip) == 0 && active_connections[i].port == port) {
+            return 1;  // Duplicate found
+        }
+    }
+    return 0;
+}
+
+// Function to add a new connection
+void add_connection(const char *ip, int port) {
+    if (conn_count < MAX_CONNECTIONS) {
+        strcpy(active_connections[conn_count].ip, ip);
+        active_connections[conn_count].port = port;
+        conn_count++;
+    } else {
+        printf("Warning: Max connections reached, unable to track more.\n");
+    }
 }
 
 // Function to connect to a server
@@ -47,6 +78,12 @@ void connect_to_server(const char *ip, int port) {
     // Check if connecting to itself
     if (strcmp(ip, local_ip) == 0) {
         printf("Error: Attempted self-connection. Exiting.\n");
+        return;
+    }
+
+    // Check for duplicate connection
+    if (is_duplicate_connection(ip, port)) {
+        printf("Error: Duplicate connection detected to %s:%d. Exiting.\n", ip, port);
         return;
     }
 
@@ -69,6 +106,7 @@ void connect_to_server(const char *ip, int port) {
     }
 
     printf("Connected to server at %s:%d\n", ip, port);
+    add_connection(ip, port); // Store connection
 
     // Chat loop
     while (1) {
