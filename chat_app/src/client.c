@@ -97,6 +97,18 @@ void terminate_connection(int id) {
     conn_count--;
 }
 
+// Function to send a message to a specific connection
+void send_message(int id, const char *message) {
+    if (id < 1 || id > conn_count) {
+        printf("Error: Invalid connection ID.\n");
+        return;
+    }
+
+    int sock = active_connections[id - 1].sock;
+    send(sock, message, strlen(message), 0);
+    printf("Message sent to %s:%d\n", active_connections[id - 1].ip, active_connections[id - 1].port);
+}
+
 // Function to connect to a server
 void connect_to_server(const char *ip, int port) {
     int sock;
@@ -158,6 +170,19 @@ void connect_to_server(const char *ip, int port) {
                 terminate_connection(id);
             } else {
                 printf("Usage: terminate <connection id>\n");
+            }
+            continue;
+        }
+
+        // If the user types "send <id> <message>", send the message
+        if (strncmp(buffer, "send", 4) == 0) {
+            int id;
+            char message[BUFFER_SIZE];
+
+            if (sscanf(buffer, "send %d %[^\n]", &id, message) == 2) {
+                send_message(id, message);
+            } else {
+                printf("Usage: send <connection id> <message>\n");
             }
             continue;
         }
