@@ -167,6 +167,7 @@ void accept_connection() {
 
 
 void *server_loop(void *arg) {
+    (void)arg;
     while (1) {
         accept_connection();  // Wait for incoming connections
     }

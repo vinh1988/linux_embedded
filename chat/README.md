@@ -46,3 +46,11 @@ The following commands can be used in the chat application:
 -   `terminate <id>`: Close a connection
 -   `send <id> <message>`: Send a message to a peer
 -   `exit`: Close all connections and terminate
+
+## Youtube Demo
+[Click here ](https://youtu.be/I5z46awi3ck)
+
+
+## Mermaid graph structure
+![Chat Preview](chat.png)
+
