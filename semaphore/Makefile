@@ -8,13 +8,13 @@ TESTS = tests
 all: writer reader
 
 writer: $(SRC)/writer.c include/shared.h
-	$(CC) $(CFLAGS) $(INCLUDES) -o writer $(SRC)/writer.c
+	$(CC) $(CFLAGS) $(INCLUDES) -o writer $(SRC)/writer.c -lrt
 
 reader: $(SRC)/reader.c include/shared.h
-	$(CC) $(CFLAGS) $(INCLUDES) -o reader $(SRC)/reader.c
+	$(CC) $(CFLAGS) $(INCLUDES) -o reader $(SRC)/reader.c -lrt
 
 test: $(TESTS)/test_shared.c include/shared.h
-	$(CC) $(CFLAGS) $(INCLUDES) -o test_shared $(TESTS)/test_shared.c
+	$(CC) $(CFLAGS) $(INCLUDES) -o test_shared $(TESTS)/test_shared.c -lrt
 	./test_shared
 
 clean:
