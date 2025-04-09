@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant Writer
+    participant SharedMemoryFile
+    participant Reader
+
+    note over Writer, Reader: POSIX File-Based Shared Memory
+
+    Writer->>SharedMemoryFile: open("shared_file", O_CREAT | O_RDWR, 0666) - Create/Open file
+    Writer->>SharedMemoryFile: ftruncate(fd, SIZE) - Set file size
+    Writer->>SharedMemoryFile: mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0) - Map file to memory
+    Writer->>SharedMemoryFile: Write data
+
+    Reader->>SharedMemoryFile: open("shared_file", O_RDWR, 0666) - Open file
+    Reader->>SharedMemoryFile: mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0) - Map file to memory
+    Reader->>SharedMemoryFile: Read data
+
+    Writer->>SharedMemoryFile: munmap(shared_memory, SIZE) - Unmap file from memory
+    Reader->>SharedMemoryFile: munmap(shared_memory, SIZE) - Unmap file from memory
+    Writer->>SharedMemoryFile: close(fd) - Close file
+    Reader->>SharedMemoryFile: close(fd) - Close file
+    Writer->>SharedMemoryFile: unlink("shared_file") - Remove file
