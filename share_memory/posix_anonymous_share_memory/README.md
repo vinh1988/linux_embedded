@@ -23,17 +23,9 @@ chmod +x build.sh
 ./anon_shared
 ```
 
-## Workflow
+## Youtube Demo
+[Click here ](https://youtu.be/E4ytbaqNfiE)
 
-```mermaid
-%%{init: 'themeVariables': { 'primaryColor': '#bbdefb', 'secondaryColor': '#e1f5fe', 'tertiaryColor': '#ffffff' }}%%
-sequenceDiagram
-    participant Process A
-    participant Process B
-    Process A->>Process B: shm_open(SHM_ANON, ...)
-    Process B->>Process A: fd (shared memory file descriptor)
-    Process A->>Process B: mmap(fd, ...)
-    Process B->>Process A: addr (shared memory address)
-    Process A-->>Process B: Access shared memory at addr
-    Process B-->>Process A: Access shared memory at addr
-    Process A->>Process B: shm_unlink(...)
+
+## Mermaid graph structure
+![Workflow Detail](POSIX_anonymous_share_memory.png)

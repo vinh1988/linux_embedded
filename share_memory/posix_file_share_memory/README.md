@@ -25,17 +25,9 @@ chmod +x build.sh
 ./posix_reader
 ```
 
-## Workflow
+## Youtube Demo
+[Click here ](https://youtu.be/E4ytbaqNfiE)
 
-```mermaid
-%%{init: 'themeVariables': { 'primaryColor': '#bbdefb', 'secondaryColor': '#e1f5fe', 'tertiaryColor': '#ffffff' }}%%
-sequenceDiagram
-    participant Writer
-    participant Reader
-    Writer->>Reader: shm_open("/my_shared_memory", ...)
-    Reader->>Writer: fd (shared memory file descriptor)
-    Writer->>Reader: mmap(fd, ...)
-    Reader->>Writer: addr (shared memory address)
-    Writer-->>Reader: Write data to shared memory at addr
-    Reader-->>Writer: Read data from shared memory at addr
-    Writer->>Reader: shm_unlink("/my_shared_memory")
+
+## Mermaid graph structure
+![Workflow Detail](POSIX_file_share_memory.png)
