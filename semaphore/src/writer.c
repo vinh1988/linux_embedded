@@ -9,10 +9,28 @@
 
 int main() {
     int shm_fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
-    ftruncate(shm_fd, SHM_SIZE);
+    if (shm_fd == -1) {
+        perror("shm_open");
+        return 1;
+    }
+
+    if (ftruncate(shm_fd, SHM_SIZE) == -1) {
+        perror("ftruncate");
+        return 1;
+    }
+
     char *shm_ptr = mmap(0, SHM_SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    if (shm_ptr == MAP_FAILED) {
+        perror("mmap");
+        return 1;
+    }
 
     sem_t *sem = sem_open(SEM_NAME, O_CREAT, 0666, 1);
+    if (sem == SEM_FAILED) {
+        perror("sem_open");
+        return 1;
+    }
+
     sem_wait(sem);
 
     strcpy(shm_ptr, "Hello from writer!");
