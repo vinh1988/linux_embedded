@@ -4,7 +4,7 @@ This project implements a sensor gateway system that collects data from sensor n
 
 ## Architecture
 
-![Sensor Gateway Architecture](https://github.com/user/repo/raw/main/architecture.png)
+![Sensor Gateway Architecture](temperature_measurement.png)
 
 The system consists of the following components:
 
