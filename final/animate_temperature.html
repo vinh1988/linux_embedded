@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Animated Temperature Measurement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .image-container {
+            position: relative;
+            margin: 20px auto;
+            width: 800px;
+        }
+        .base-image {
+            width: 100%;
+            display: block;
+        }
+        .data-point {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: orange;
+            border-radius: 50%;
+            transform: translate(-5px, -5px);
+            z-index: 10;
+            box-shadow: 0 0 5px rgba(255, 165, 0, 0.8);
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .explanation {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f0f7ff;
+            border: 1px solid #d0e3ff;
+            border-radius: 4px;
+        }
+        .highlight {
+            position: absolute;
+            background-color: rgba(255, 255, 0, 0.3);
+            border: 2px solid rgba(255, 165, 0, 0.8);
+            border-radius: 5px;
+            z-index: 5;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Animated Sensor Gateway Temperature Measurement</h1>
+        
+        <div class="controls">
+            <button id="startBtn">Start Animation</button>
+            <button id="stopBtn">Stop Animation</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+        
+        <div class="image-container">
+            <img src="temperature_measurement.png" alt="Temperature Measurement" class="base-image" id="baseImage">
+            <div id="animationLayer"></div>
+        </div>
+        
+        <div class="explanation">
+            <h3>Animation Explanation:</h3>
+            <p>This animation demonstrates the flow of temperature data through the sensor gateway system:</p>
+            <ol>
+                <li>Temperature data is received from sensor nodes by the Connection Manager</li>
+                <li>Data Manager calculates running average over 5 samples</li>
+                <li>Data Manager detects if temperature exceeds thresholds (too hot/cold)</li>
+                <li>Storage Manager saves all data to SQLite database</li>
+                <li>Log Process records temperature events when thresholds are crossed</li>
+            </ol>
+            <p>The orange dots represent data packets flowing through the system.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Wait for image to load to get its dimensions
+        window.addEventListener('load', function() {
+            const baseImage = document.getElementById('baseImage');
+            const animationLayer = document.getElementById('animationLayer');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            // Animation paths - these coordinates will need to be adjusted based on the actual image
+            // Format: Array of {x, y, delay, duration} objects
+            const paths = [
+                // Path 1: Sensor Node to Connection Manager
+                [
+                    {x: 100, y: 100, delay: 0, duration: 1000},
+                    {x: 150, y: 150, delay: 0, duration: 800},
+                    {x: 200, y: 150, delay: 0, duration: 800}
+                ],
+                
+                // Path 2: Connection Manager to Shared Data
+                [
+                    {x: 200, y: 150, delay: 1000, duration: 800},
+                    {x: 200, y: 250, delay: 0, duration: 800},
+                    {x: 300, y: 300, delay: 0, duration: 800}
+                ],
+                
+                // Path 3: Shared Data to Data Manager
+                [
+                    {x: 300, y: 300, delay: 2000, duration: 800},
+                    {x: 400, y: 300, delay: 0, duration: 800},
+                    {x: 400, y: 150, delay: 0, duration: 800}
+                ],
+                
+                // Path 4: Data Manager to Shared Data (updated with running avg)
+                [
+                    {x: 400, y: 150, delay: 3000, duration: 800},
+                    {x: 400, y: 300, delay: 0, duration: 800},
+                    {x: 500, y: 300, delay: 0, duration: 800}
+                ],
+                
+                // Path 5: Shared Data to Storage Manager
+                [
+                    {x: 500, y: 300, delay: 4000, duration: 800},
+                    {x: 600, y: 300, delay: 0, duration: 800},
+                    {x: 600, y: 150, delay: 0, duration: 800}
+                ],
+                
+                // Path 6: Storage Manager to SQL Database
+                [
+                    {x: 600, y: 150, delay: 5000, duration: 800},
+                    {x: 700, y: 150, delay: 0, duration: 800}
+                ],
+                
+                // Path 7: Data Manager to FIFO (when threshold crossed)
+                [
+                    {x: 400, y: 150, delay: 6000, duration: 800},
+                    {x: 400, y: 400, delay: 0, duration: 800}
+                ],
+                
+                // Path 8: FIFO to Log Process
+                [
+                    {x: 400, y: 400, delay: 7000, duration: 800},
+                    {x: 400, y: 450, delay: 0, duration: 800}
+                ],
+                
+                // Path 9: Log Process to Log File
+                [
+                    {x: 400, y: 450, delay: 8000, duration: 800},
+                    {x: 500, y: 450, delay: 0, duration: 800}
+                ]
+            ];
+            
+            // Component highlight regions - adjust based on actual image
+            const highlights = [
+                {id: 'connectionManager', x: 150, y: 120, width: 100, height: 60, delay: 1000, duration: 1000},
+                {id: 'sharedData', x: 250, y: 270, width: 300, height: 60, delay: 2000, duration: 1000},
+                {id: 'dataManager', x: 350, y: 120, width: 100, height: 60, delay: 3000, duration: 1000},
+                {id: 'storageManager', x: 550, y: 120, width: 100, height: 60, delay: 5000, duration: 1000},
+                {id: 'fifo', x: 350, y: 370, width: 100, height: 30, delay: 7000, duration: 1000},
+                {id: 'logProcess', x: 350, y: 420, width: 100, height: 60, delay: 8000, duration: 1000}
+            ];
+            
+            let animationElements = [];
+            let highlightElements = [];
+            let animationInterval;
+            let isRunning = false;
+            
+            // Create a data point element
+            function createDataPoint(x, y) {
+                const point = document.createElement('div');
+                point.className = 'data-point';
+                point.style.left = x + 'px';
+                point.style.top = y + 'px';
+                animationLayer.appendChild(point);
+                return point;
+            }
+            
+            // Create a highlight element
+            function createHighlight(id, x, y, width, height) {
+                const highlight = document.createElement('div');
+                highlight.className = 'highlight';
+                highlight.id = id;
+                highlight.style.left = x + 'px';
+                highlight.style.top = y + 'px';
+                highlight.style.width = width + 'px';
+                highlight.style.height = height + 'px';
+                highlight.style.display = 'none';
+                animationLayer.appendChild(highlight);
+                return highlight;
+            }
+            
+            // Animate a data point along a path
+            function animateAlongPath(point, path) {
+                let currentStep = 0;
+                let totalDelay = 0;
+                
+                function nextStep() {
+                    if (currentStep >= path.length) {
+                        // Animation complete
+                        return;
+                    }
+                    
+                    const step = path[currentStep];
+                    totalDelay += step.delay;
+                    
+                    setTimeout(() => {
+                        // Animate to next position
+                        animateToPosition(point, step.x, step.y, step.duration, () => {
+                            currentStep++;
+                            nextStep();
+                        });
+                    }, totalDelay);
+                    
+                    totalDelay = 0; // Reset for next step
+                }
+                
+                nextStep();
+            }
+            
+            // Animate element to a position
+            function animateToPosition(element, targetX, targetY, duration, callback) {
+                const startX = parseInt(element.style.left);
+                const startY = parseInt(element.style.top);
+                const startTime = Date.now();
+                
+                function updatePosition() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    const currentX = startX + (targetX - startX) * progress;
+                    const currentY = startY + (targetY - startY) * progress;
+                    
+                    element.style.left = currentX + 'px';
+                    element.style.top = currentY + 'px';
+                    
+                    if (progress < 1 && isRunning) {
+                        requestAnimationFrame(updatePosition);
+                    } else if (callback && progress >= 1) {
+                        callback();
+                    }
+                }
+                
+                requestAnimationFrame(updatePosition);
+            }
+            
+            // Show highlight with delay
+            function showHighlightWithDelay(highlight, delay, duration) {
+                setTimeout(() => {
+                    highlight.style.display = 'block';
+                    setTimeout(() => {
+                        highlight.style.display = 'none';
+                    }, duration);
+                }, delay);
+            }
+            
+            // Start the animation
+            function startAnimation() {
+                if (isRunning) return;
+                isRunning = true;
+                
+                // Clear previous animation elements
+                clearAnimation();
+                
+                // Create highlights
+                highlights.forEach(h => {
+                    const highlight = createHighlight(h.id, h.x, h.y, h.width, h.height);
+                    highlightElements.push(highlight);
+                    showHighlightWithDelay(highlight, h.delay, h.duration);
+                });
+                
+                // Create and animate data points along paths
+                paths.forEach(path => {
+                    if (path.length > 0) {
+                        const startPoint = path[0];
+                        const point = createDataPoint(startPoint.x, startPoint.y);
+                        animationElements.push(point);
+                        animateAlongPath(point, path);
+                    }
+                });
+                
+                // Restart animation after all paths complete
+                const maxDelay = Math.max(...paths.map(path => 
+                    path.reduce((sum, step) => sum + step.delay + step.duration, 0)
+                ));
+                
+                animationInterval = setTimeout(() => {
+                    if (isRunning) {
+                        startAnimation();
+                    }
+                }, maxDelay + 2000); // Add 2 seconds pause between cycles
+            }
+            
+            // Stop the animation
+            function stopAnimation() {
+                isRunning = false;
+                clearTimeout(animationInterval);
+            }
+            
+            // Clear all animation elements
+            function clearAnimation() {
+                animationElements.forEach(element => element.remove());
+                animationElements = [];
+                
+                highlightElements.forEach(element => element.remove());
+                highlightElements = [];
+                
+                clearTimeout(animationInterval);
+            }
+            
+            // Reset the animation
+            function resetAnimation() {
+                stopAnimation();
+                clearAnimation();
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startAnimation);
+            stopBtn.addEventListener('click', stopAnimation);
+            resetBtn.addEventListener('click', resetAnimation);
+            
+            // Adjust animation coordinates based on actual image dimensions
+            function adjustCoordinates() {
+                const imageWidth = baseImage.width;
+                const imageHeight = baseImage.height;
+                
+                // This function would adjust all coordinates in paths and highlights
+                // based on the actual dimensions of the loaded image
+                // For simplicity, we're not implementing the full adjustment logic here
+                console.log(`Image dimensions: ${imageWidth}x${imageHeight}`);
+            }
+            
+            // Call adjust when image is loaded
+            if (baseImage.complete) {
+                adjustCoordinates();
+            } else {
+                baseImage.onload = adjustCoordinates;
+            }
+        });
+    </script>
+</body>
+</html>
