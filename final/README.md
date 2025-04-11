@@ -6,6 +6,24 @@ This project implements a sensor gateway system that collects data from sensor n
 
 ![Sensor Gateway Architecture](temperature_measurement.png)
 
+### Interactive Visualization
+
+An interactive, animated visualization of the system is available. To view the animation:
+
+1. Open the `animate_temperature.html` file in a web browser
+2. Click the "Start Animation" button to begin
+3. Watch as data flows through the system components
+4. Use the controls to pause or reset the animation
+
+The animation demonstrates how data moves from sensor nodes through the various components of the system, including:
+- Data collection by the Connection Manager
+- Running average calculation in the Data Manager
+- Threshold detection for temperature events
+- Storage of data in the SQLite database
+- Logging of events through the FIFO to the Log Process
+
+This visualization helps to understand the dynamic behavior of the system in real-time.
+
 The system consists of the following components:
 
 1. **Main Process**: Contains three threads:
@@ -26,6 +44,7 @@ The system consists of the following components:
 - Running average calculation for temperature data
 - SQLite database storage
 - Logging system with sequence numbers and timestamps
+- Interactive animated visualization of data flow
 - Graceful error handling and shutdown
 
 ## Requirements
@@ -145,6 +164,30 @@ make clean
 - Opens FIFO for reading
 - Reads log events from FIFO
 - Writes log events to log file with sequence number and timestamp
+
+## Animated Visualization
+
+The project includes an interactive HTML-based animation (`animate_temperature.html`) that visualizes the data flow through the sensor gateway system. This animation helps to understand the dynamic behavior of the system and how the different components interact.
+
+### Animation Features
+
+- **Data Flow Visualization**: Orange dots represent data packets flowing through the system
+- **Component Highlighting**: Components are highlighted as data passes through them
+- **Interactive Controls**: Start, stop, and reset the animation
+- **Continuous Loop**: The animation cycles continuously to show ongoing data processing
+
+### Technical Implementation
+
+The animation is implemented using HTML, CSS, and JavaScript. It overlays animated elements on top of the static architecture diagram to show the movement of data through the system. The animation uses the following techniques:
+
+- Absolute positioning of elements over the base image
+- CSS animations for visual effects
+- JavaScript for controlling the animation flow
+- Dynamic path calculation for data movement
+
+### Using the Animation for Presentations
+
+The animated visualization is particularly useful for presentations and demonstrations of the sensor gateway system. It provides a clear, visual explanation of how data flows through the system and how the different components interact with each other.
 
 ## License
 
