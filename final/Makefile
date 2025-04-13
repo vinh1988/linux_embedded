@@ -6,7 +6,8 @@ SRC_DIR = src
 INCLUDE_DIR = include
 BUILD_DIR = build
 
-SERVER_SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/connection_manager.c $(SRC_DIR)/data_manager.c $(SRC_DIR)/storage_manager.c
+SERVER_SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/connection_manager_epoll.c $(SRC_DIR)/data_manager.c \
+	$(SRC_DIR)/storage_manager.c $(SRC_DIR)/status_manager.c $(SRC_DIR)/security_manager.c
 LOG_SRCS = $(SRC_DIR)/log_process.c
 
 SERVER_OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SERVER_SRCS))
@@ -32,7 +33,10 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c -o $@ $<
 
 clean:
-	rm -rf $(BUILD_DIR) $(SERVER_TARGET) $(LOG_TARGET) *.db gateway.log logFifo
+	rm -rf $(BUILD_DIR) $(SERVER_TARGET) $(LOG_TARGET) *.db gateway.log logFifo blacklist.txt
 
 run: all
-	./$(SERVER_TARGET) 1234
+	./$(SERVER_TARGET) --port 1234
+
+run-help: all
+	./$(SERVER_TARGET) --help

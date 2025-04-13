@@ -7,19 +7,38 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <pthread.h>
+#include <sys/wait.h>
+#include <stdbool.h>
+#include <getopt.h>
 #include "../include/shared.h"
+
+/* Include sensor data header */
 #include "../include/sensor_data.h"
 
-/* Thread function prototypes */
+/* Function prototypes */
 void *connection_manager_thread(void *arg);
 void *data_manager_thread(void *arg);
 void *storage_manager_thread(void *arg);
+
+/* New components */
+int init_status_manager();
+void cleanup_status_manager();
+int init_security_manager();
+void cleanup_security_manager();
+void print_system_status(system_status_t *status);
+void print_connection_stats(connection_list_t *list);
+
+/* Command handlers */
+void handle_status_command();
+void handle_stats_command();
+void handle_exit_command();
 
 /* Global variables */
 shared_data_t shared_data;
 int fifo_fd;
 int port;
 volatile int running = 1;
+extern system_status_t system_status;
 
 /* Signal handler for graceful shutdown */
 void signal_handler(int sig) {
@@ -27,32 +46,132 @@ void signal_handler(int sig) {
     running = 0;
 }
 
-int main(int argc, char *argv[]) {
-    pthread_t conn_thread, data_thread, storage_thread;
-    pid_t log_pid;
-    int status;
+/* Command line options */
+static struct option long_options[] = {
+    {"port", required_argument, 0, 'p'},
+    {"help", no_argument, 0, 'h'},
+    {0, 0, 0, 0}
+};
 
-    /* Check command line arguments */
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
-        return 1;
+/* Print usage information */
+void print_usage(const char *program_name) {
+    printf("Usage: %s [OPTIONS]\n\n", program_name);
+    printf("Options:\n");
+    printf("  -p, --port PORT    Port to listen on (default: 1234)\n");
+    printf("  -h, --help         Display this help message\n");
+    printf("\n");
+    printf("Commands (during runtime):\n");
+    printf("  status             Display system status\n");
+    printf("  stats              Display connection statistics\n");
+    printf("  exit               Exit the program\n");
+}
+
+/* Command input thread function */
+void *command_input_thread(void *arg) {
+    /* Unused parameter */
+    (void)arg;
+
+    char command[100];
+
+    printf("\nEnter commands (status, stats, exit):\n");
+
+    while (running) {
+        printf("> ");
+        fflush(stdout);
+
+        if (fgets(command, sizeof(command), stdin) == NULL) {
+            break;
+        }
+
+        /* Remove newline */
+        size_t len = strlen(command);
+        if (len > 0 && command[len - 1] == '\n') {
+            command[len - 1] = '\0';
+        }
+
+        /* Process command */
+        if (strcmp(command, "status") == 0) {
+            handle_status_command();
+        } else if (strcmp(command, "stats") == 0) {
+            handle_stats_command();
+        } else if (strcmp(command, "exit") == 0) {
+            handle_exit_command();
+            break;
+        } else if (strlen(command) > 0) {
+            printf("Unknown command: %s\n", command);
+        }
     }
 
-    /* Parse port number */
-    port = atoi(argv[1]);
-    if (port <= 0 || port > 65535) {
-        fprintf(stderr, "Invalid port number: %s\n", argv[1]);
-        return 1;
+    return NULL;
+}
+
+/* Handle status command */
+void handle_status_command() {
+    print_system_status(&system_status);
+}
+
+/* Handle stats command */
+void handle_stats_command() {
+    /* This function would need access to the connection list */
+    printf("Connection statistics not available in this context\n");
+}
+
+/* Handle exit command */
+void handle_exit_command() {
+    printf("Shutting down...\n");
+    running = 0;
+}
+
+int main(int argc, char *argv[]) {
+    pthread_t conn_thread, data_thread, storage_thread, cmd_thread;
+    pid_t log_pid;
+    int status, opt, option_index = 0;
+
+    /* Set default port */
+    port = 1234;
+
+    /* Parse command line options */
+    while ((opt = getopt_long(argc, argv, "p:h", long_options, &option_index)) != -1) {
+        switch (opt) {
+            case 'p':
+                port = atoi(optarg);
+                if (port <= 0 || port > 65535) {
+                    fprintf(stderr, "Invalid port number: %s\n", optarg);
+                    return 1;
+                }
+                break;
+            case 'h':
+                print_usage(argv[0]);
+                return 0;
+            default:
+                print_usage(argv[0]);
+                return 1;
+        }
     }
 
     /* Set up signal handler */
     signal(SIGINT, signal_handler);
     signal(SIGTERM, signal_handler);
 
+    printf("Sensor Gateway starting on port %d...\n", port);
+
     /* Initialize shared data */
     memset(&shared_data, 0, sizeof(shared_data));
     if (pthread_mutex_init(&shared_data.mutex, NULL) != 0) {
         perror("pthread_mutex_init");
+        return 1;
+    }
+
+    /* Initialize security manager */
+    if (init_security_manager() != 0) {
+        fprintf(stderr, "Failed to initialize security manager\n");
+        return 1;
+    }
+
+    /* Initialize status manager */
+    if (init_status_manager() != 0) {
+        fprintf(stderr, "Failed to initialize status manager\n");
+        cleanup_security_manager();
         return 1;
     }
 
@@ -100,6 +219,8 @@ int main(int argc, char *argv[]) {
     /* Create threads */
     if (pthread_create(&conn_thread, NULL, connection_manager_thread, NULL) != 0) {
         perror("pthread_create (connection manager)");
+        cleanup_status_manager();
+        cleanup_security_manager();
         kill(log_pid, SIGTERM);
         return 1;
     }
@@ -108,6 +229,8 @@ int main(int argc, char *argv[]) {
         perror("pthread_create (data manager)");
         running = 0;
         pthread_join(conn_thread, NULL);
+        cleanup_status_manager();
+        cleanup_security_manager();
         kill(log_pid, SIGTERM);
         return 1;
     }
@@ -117,6 +240,21 @@ int main(int argc, char *argv[]) {
         running = 0;
         pthread_join(conn_thread, NULL);
         pthread_join(data_thread, NULL);
+        cleanup_status_manager();
+        cleanup_security_manager();
+        kill(log_pid, SIGTERM);
+        return 1;
+    }
+
+    /* Create command input thread */
+    if (pthread_create(&cmd_thread, NULL, command_input_thread, NULL) != 0) {
+        perror("pthread_create (command input)");
+        running = 0;
+        pthread_join(conn_thread, NULL);
+        pthread_join(data_thread, NULL);
+        pthread_join(storage_thread, NULL);
+        cleanup_status_manager();
+        cleanup_security_manager();
         kill(log_pid, SIGTERM);
         return 1;
     }
@@ -125,8 +263,11 @@ int main(int argc, char *argv[]) {
     pthread_join(conn_thread, NULL);
     pthread_join(data_thread, NULL);
     pthread_join(storage_thread, NULL);
+    pthread_join(cmd_thread, NULL);
 
     /* Clean up */
+    cleanup_status_manager();
+    cleanup_security_manager();
     pthread_mutex_destroy(&shared_data.mutex);
     close(fifo_fd);
 
@@ -140,11 +281,11 @@ int main(int argc, char *argv[]) {
 /* Function to write log events to FIFO */
 void write_log_event(int fifo_fd, log_event_type_t type, uint16_t node_id, float value, const char *message) {
     log_event_t event;
-    
+
     if (fifo_fd == -1) {
         return; /* FIFO not available */
     }
-    
+
     /* Prepare log event */
     event.type = type;
     event.node_id = node_id;
@@ -155,7 +296,7 @@ void write_log_event(int fifo_fd, log_event_type_t type, uint16_t node_id, float
     } else {
         event.message[0] = '\0';
     }
-    
+
     /* Write to FIFO */
     pthread_mutex_lock(&shared_data.mutex); /* Use shared mutex for FIFO access */
     write(fifo_fd, &event, sizeof(event));
