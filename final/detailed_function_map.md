@@ -1,4 +1,5 @@
 ```mermaid
+%%{init: {'theme': 'default', 'flowchart': {'htmlLabels': true, 'curve': 'basis', 'diagramPadding': 50, 'useMaxWidth': false, 'width': 1800, 'height': 1400, 'rankSpacing': 80, 'nodeSpacing': 80}, 'fontSize': 16} }%%
 flowchart TD
     %% Main Process Functions
     main[main\nmain.c] --> init_security[init_security_manager\nsecurity_manager.c]
@@ -17,7 +18,7 @@ flowchart TD
     cmd_thread[command_input_thread\nmain.c] --> handle_status[handle_status_command\nmain.c]
     cmd_thread --> handle_stats[handle_stats_command\nmain.c]
     cmd_thread --> handle_exit[handle_exit_command\nmain.c]
-    
+
     handle_status --> print_status[print_system_status\nstatus_manager.c]
     handle_stats --> print_conn_stats[print_connection_stats\nstatus_manager.c]
     handle_exit --> set_running_false[running = 0\nmain.c]
@@ -127,14 +128,14 @@ flowchart TD
     conn_list --- update_sys_status
 
     %% Style definitions
-    classDef main fill:#f9d5e5,stroke:#333,stroke-width:1px;
-    classDef conn fill:#eeac99,stroke:#333,stroke-width:1px;
-    classDef data fill:#e06377,stroke:#333,stroke-width:1px;
-    classDef storage fill:#c83349,stroke:#333,stroke-width:1px;
-    classDef status fill:#5b9aa0,stroke:#333,stroke-width:1px;
-    classDef security fill:#d6e1c7,stroke:#333,stroke-width:1px;
-    classDef log fill:#fceade,stroke:#333,stroke-width:1px;
-    classDef shared fill:#f7f6cf,stroke:#333,stroke-width:1px;
+    classDef main fill:#f9d5e5,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
+    classDef conn fill:#eeac99,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
+    classDef data fill:#e06377,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
+    classDef storage fill:#c83349,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
+    classDef status fill:#5b9aa0,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
+    classDef security fill:#d6e1c7,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
+    classDef log fill:#fceade,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
+    classDef shared fill:#f7f6cf,stroke:#333,stroke-width:2px,font-size:18px,padding:15px;
 
     %% Apply styles
     class main,cmd_thread,handle_status,handle_stats,handle_exit,set_running_false main;
