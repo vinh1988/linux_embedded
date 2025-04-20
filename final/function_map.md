@@ -1,4 +1,5 @@
 ```mermaid
+%%{init: {'theme': 'default', 'classDiagram': {'useMaxWidth': false, 'width': 1800, 'height': 1400}, 'fontSize': 16} }%%
 classDiagram
     %% Main components
     class Main {

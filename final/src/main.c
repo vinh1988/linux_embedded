@@ -27,6 +27,7 @@ int init_security_manager();
 void cleanup_security_manager();
 void print_system_status(system_status_t *status);
 void print_connection_stats(connection_list_t *list);
+connection_list_t* get_connection_list(); /* Added function to get connection list */
 
 /* Command handlers */
 void handle_status_command();
@@ -40,7 +41,22 @@ int port;
 volatile int running = 1;
 extern system_status_t system_status;
 
+/* FIFO and log file names with port */
+char FIFO_NAME[64];
+char LOG_FILE[64];
+
 /* Signal handler for graceful shutdown */
+    time_t start_time;
+    uint32_t total_connections;
+    uint32_t active_connections;
+    uint32_t total_messages_received;
+    uint32_t total_messages_sent;
+    uint32_t total_bytes_received;
+    uint32_t total_bytes_sent;
+    uint32_t total_errors;
+    float cpu_usage;
+    uint64_t memory_usage;
+    pthread_mutex_t mutex;
 void signal_handler(int sig) {
     printf("Received signal %d, shutting down...\n", sig);
     running = 0;
@@ -55,10 +71,13 @@ static struct option long_options[] = {
 
 /* Print usage information */
 void print_usage(const char *program_name) {
-    printf("Usage: %s [OPTIONS]\n\n", program_name);
+    printf("Usage: %s [OPTIONS] [PORT]\n\n", program_name);
     printf("Options:\n");
     printf("  -p, --port PORT    Port to listen on (default: 1234)\n");
     printf("  -h, --help         Display this help message\n");
+    printf("\n");
+    printf("You can also specify the port as a positional argument:\n");
+    printf("  %s 5000           Start server on port 5000\n", program_name);
     printf("\n");
     printf("Commands (during runtime):\n");
     printf("  status             Display system status\n");
@@ -112,8 +131,13 @@ void handle_status_command() {
 
 /* Handle stats command */
 void handle_stats_command() {
-    /* This function would need access to the connection list */
-    printf("Connection statistics not available in this context\n");
+    /* Get connection list and print statistics */
+    connection_list_t *conn_list = get_connection_list();
+    if (conn_list) {
+        print_connection_stats(conn_list);
+    } else {
+        printf("Failed to get connection list\n");
+    }
 }
 
 /* Handle exit command */
@@ -148,6 +172,20 @@ int main(int argc, char *argv[]) {
                 return 1;
         }
     }
+
+    /* Check for positional arguments (port number without -p flag) */
+    if (optind < argc) {
+        /* Use the first non-option argument as port */
+        port = atoi(argv[optind]);
+        if (port <= 0 || port > 65535) {
+            fprintf(stderr, "Invalid port number: %s\n", argv[optind]);
+            return 1;
+        }
+    }
+
+    /* Set FIFO and log file names based on port */
+    snprintf(FIFO_NAME, sizeof(FIFO_NAME), "%s_%d", FIFO_BASE_NAME, port);
+    snprintf(LOG_FILE, sizeof(LOG_FILE), "%s_%d", LOG_BASE_NAME, port);
 
     /* Set up signal handler */
     signal(SIGINT, signal_handler);
@@ -197,7 +235,9 @@ int main(int argc, char *argv[]) {
         return 1;
     } else if (log_pid == 0) {
         /* Child process (log process) */
-        execl("./log_process", "log_process", NULL);
+        char port_str[16];
+        snprintf(port_str, sizeof(port_str), "%d", port);
+        execl("./log_process", "log_process", port_str, NULL);
         perror("execl");
         return 1;
     }

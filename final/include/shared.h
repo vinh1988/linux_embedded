@@ -11,8 +11,13 @@
 /* Constants */
 #define MAX_SENSOR_NODES 1000  /* Increased from 100 to support more connections */
 #define MAX_BUFFER_SIZE 1024
-#define FIFO_NAME "logFifo"
-#define LOG_FILE "gateway.log"
+/* Base names for FIFO and log file */
+#define FIFO_BASE_NAME "logFifo"
+#define LOG_BASE_NAME "gateway.log"
+
+/* Buffer for storing the actual FIFO and log file names with port */
+extern char FIFO_NAME[64];
+extern char LOG_FILE[64];
 
 /* Connection management constants */
 #define MAX_CONNECTIONS 1000
@@ -85,6 +90,7 @@ typedef struct {
     uint32_t bytes_received;
     uint32_t bytes_sent;
     uint32_t errors;
+    uint32_t auth_failures;  /* Counter for authentication failures */
     pthread_mutex_t mutex;
 } connection_session_t;
 

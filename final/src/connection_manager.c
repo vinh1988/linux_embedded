@@ -132,7 +132,7 @@ void *connection_manager_thread(void *arg) {
         running = 0;
         return NULL;
     }
-    
+    handle_sensor_connection
     printf("Connection manager listening on port %d\n", port);
     
     /* Accept connections */
