@@ -1,0 +1,35 @@
+Sensor Simulator starting (ID: 5, Server: 127.0.0.1:1245, Interval: 13 sec)
+Connecting to server...
+Connected to server at 127.0.0.1:1245 as sensor node 5
+Sending authentication: AUTH sensor_user password123
+Sending data: DATA 5 21.81 46.41 1017.67 1745111195
+Next transmission at 08:06:48 (13 seconds from now)
+Sending data: DATA 5 25.32 49.99 1009.64 1745111208
+Next transmission at 08:07:01 (13 seconds from now)
+Sending data: DATA 5 18.07 47.97 1021.19 1745111221
+Next transmission at 08:07:14 (13 seconds from now)
+Sending data: DATA 5 19.46 57.72 1014.71 1745111234
+Next transmission at 08:07:27 (13 seconds from now)
+Sending data: DATA 5 18.08 58.42 1015.40 1745111247
+Next transmission at 08:07:40 (13 seconds from now)
+Sending data: DATA 5 25.21 45.87 1008.43 1745111260
+Next transmission at 08:07:53 (13 seconds from now)
+Sending data: DATA 5 24.17 44.78 1016.34 1745111273
+Next transmission at 08:08:06 (13 seconds from now)
+Sending data: DATA 5 21.13 50.77 1009.82 1745111286
+Next transmission at 08:08:19 (13 seconds from now)
+Sending data: DATA 5 20.50 50.92 1018.23 1745111299
+Next transmission at 08:08:32 (13 seconds from now)
+Sending data: DATA 5 22.98 40.16 1017.51 1745111312
+Next transmission at 08:08:45 (13 seconds from now)
+Sending data: DATA 5 24.62 49.77 1003.93 1745111325
+Next transmission at 08:08:58 (13 seconds from now)
+Sending data: DATA 5 21.96 46.41 1013.92 1745111338
+Next transmission at 08:09:11 (13 seconds from now)
+Sending data: DATA 5 25.28 48.55 1021.90 1745111351
+Next transmission at 08:09:24 (13 seconds from now)
+Sending data: DATA 5 24.38 53.47 1019.62 1745111364
+Next transmission at 08:09:37 (13 seconds from now)
+
+Received signal 2, shutting down...
+Sensor simulator shutdown complete

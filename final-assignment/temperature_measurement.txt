@@ -1,0 +1,20 @@
+SENSOR GATEWAY TEMPERATURE MEASUREMENT VISUALIZATION
+
+[This is a placeholder for temperature_measurement.png]
+
+The visualization should show:
+- Raw temperature readings from sensor nodes (black line)
+- Running average temperature over 5 samples (green line)
+- "Too hot" threshold at 30°C (red line)
+- "Too cold" threshold at 10°C (blue line)
+- Annotations for temperature events
+
+Sensor Gateway Processing Flow:
+1. Connection Manager receives temperature data from sensor nodes
+2. Data Manager calculates running average over 5 samples
+3. Data Manager detects if temperature exceeds thresholds
+4. Storage Manager saves all data to SQLite database
+5. Log Process records temperature events (too hot/cold)
+
+To create the actual PNG file, please follow the instructions in:
+temperature_measurement_instructions.txt

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Animated Temperature Measurement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .axis-y {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            height: 300px;
+            width: 2px;
+            background-color: #333;
+        }
+        .axis-x {
+            position: absolute;
+            left: 50px;
+            top: 350px;
+            height: 2px;
+            width: 700px;
+            background-color: #333;
+        }
+        .threshold-hot {
+            position: absolute;
+            left: 50px;
+            top: 100px;
+            height: 2px;
+            width: 700px;
+            background-color: red;
+            z-index: 1;
+        }
+        .threshold-cold {
+            position: absolute;
+            left: 50px;
+            top: 300px;
+            height: 2px;
+            width: 700px;
+            background-color: blue;
+            z-index: 1;
+        }
+        .data-point {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: black;
+            border-radius: 50%;
+            transform: translate(-3px, -3px);
+            z-index: 2;
+        }
+        .avg-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: green;
+            border-radius: 50%;
+            transform: translate(-4px, -4px);
+            z-index: 3;
+        }
+        .data-line {
+            position: absolute;
+            height: 2px;
+            background-color: rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+        .avg-line {
+            position: absolute;
+            height: 3px;
+            background-color: rgba(0,128,0,0.6);
+            z-index: 2;
+        }
+        .y-label {
+            position: absolute;
+            left: 10px;
+            width: 40px;
+            text-align: right;
+            font-size: 12px;
+        }
+        .x-label {
+            position: absolute;
+            top: 360px;
+            width: 40px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .threshold-label {
+            position: absolute;
+            left: 760px;
+            font-size: 12px;
+        }
+        .legend {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .legend-item {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 10px;
+            margin-right: 10px;
+        }
+        .black {
+            background-color: black;
+        }
+        .green {
+            background-color: green;
+        }
+        .red {
+            background-color: red;
+        }
+        .blue {
+            background-color: blue;
+        }
+        .explanation {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f0f7ff;
+            border: 1px solid #d0e3ff;
+            border-radius: 4px;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .event-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transform: translate(-6px, -6px);
+            z-index: 4;
+            animation: pulse 1.5s infinite;
+        }
+        .event-hot {
+            background-color: rgba(255,0,0,0.7);
+            border: 2px solid red;
+        }
+        .event-cold {
+            background-color: rgba(0,0,255,0.7);
+            border: 2px solid blue;
+        }
+        @keyframes pulse {
+            0% { transform: translate(-6px, -6px) scale(1); }
+            50% { transform: translate(-6px, -6px) scale(1.3); }
+            100% { transform: translate(-6px, -6px) scale(1); }
+        }
+        .event-label {
+            position: absolute;
+            background-color: rgba(255,255,255,0.8);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 5;
+        }
+        .sensor-node {
+            position: absolute;
+            left: 20px;
+            width: 80px;
+            height: 40px;
+            background-color: #ddd;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 40px;
+            font-size: 12px;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0% { background-color: #ddd; }
+            50% { background-color: #aaa; }
+            100% { background-color: #ddd; }
+        }
+        .data-flow {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: orange;
+            border-radius: 50%;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sensor Gateway Temperature Measurement</h1>
+        
+        <div class="controls">
+            <button id="startBtn">Start Animation</button>
+            <button id="stopBtn">Stop Animation</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+        
+        <div class="chart-container">
+            <!-- Axes -->
+            <div class="axis-y"></div>
+            <div class="axis-x"></div>
+            
+            <!-- Thresholds -->
+            <div class="threshold-hot"></div>
+            <div class="threshold-label" style="top: 95px; color: red;">Too Hot (30°C)</div>
+            
+            <div class="threshold-cold"></div>
+            <div class="threshold-label" style="top: 295px; color: blue;">Too Cold (10°C)</div>
+            
+            <!-- Y-axis labels -->
+            <div class="y-label" style="top: 50px;">40°C</div>
+            <div class="y-label" style="top: 100px;">30°C</div>
+            <div class="y-label" style="top: 200px;">20°C</div>
+            <div class="y-label" style="top: 300px;">10°C</div>
+            <div class="y-label" style="top: 350px;">0°C</div>
+            
+            <!-- X-axis labels -->
+            <div class="x-label" style="left: 50px;">0s</div>
+            <div class="x-label" style="left: 200px;">25s</div>
+            <div class="x-label" style="left: 350px;">50s</div>
+            <div class="x-label" style="left: 500px;">75s</div>
+            <div class="x-label" style="left: 650px;">100s</div>
+            
+            <!-- Sensor node representation -->
+            <div class="sensor-node" style="top: 100px;">Sensor Node</div>
+            
+            <!-- Data points and lines will be added by JavaScript -->
+            <div id="dataPoints"></div>
+            <div id="avgPoints"></div>
+            <div id="eventMarkers"></div>
+            <div id="dataFlow"></div>
+        </div>
+        
+        <div class="legend">
+            <h3>Legend:</h3>
+            <div class="legend-item"><span class="color-box black"></span> Raw temperature readings</div>
+            <div class="legend-item"><span class="color-box green"></span> Running average (5 samples)</div>
+            <div class="legend-item"><span class="color-box red"></span> Too hot threshold (30°C)</div>
+            <div class="legend-item"><span class="color-box blue"></span> Too cold threshold (10°C)</div>
+        </div>
+        
+        <div class="explanation">
+            <h3>Sensor Gateway Processing:</h3>
+            <ol>
+                <li>Connection Manager receives temperature data from sensor nodes</li>
+                <li>Data Manager calculates running average over 5 samples</li>
+                <li>Data Manager detects if temperature exceeds thresholds</li>
+                <li>Storage Manager saves all data to SQLite database</li>
+                <li>Log Process records temperature events (too hot/cold)</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const config = {
+            startX: 50,
+            endX: 750,
+            topY: 50,
+            bottomY: 350,
+            minTemp: 0,
+            maxTemp: 40,
+            hotThreshold: 30,
+            coldThreshold: 10,
+            dataPoints: 100,
+            animationSpeed: 100, // ms per step
+            windowSize: 5 // for running average
+        };
+        
+        // Generate random temperature data
+        function generateTemperatureData() {
+            const data = [];
+            let temp = 20; // Start at 20°C
+            
+            for (let i = 0; i < config.dataPoints; i++) {
+                // Random walk with some constraints
+                const change = (Math.random() - 0.5) * 4;
+                temp += change;
+                
+                // Keep within reasonable bounds
+                temp = Math.max(5, Math.min(35, temp));
+                
+                // Add some patterns
+                if (i > 20 && i < 30) {
+                    temp = Math.min(temp + 1, 35); // Warming trend
+                }
+                if (i > 60 && i < 70) {
+                    temp = Math.max(temp - 1, 5); // Cooling trend
+                }
+                
+                data.push(temp);
+            }
+            
+            return data;
+        }
+        
+        // Calculate running average
+        function calculateRunningAverage(data, windowSize) {
+            const avgData = [];
+            
+            for (let i = 0; i < data.length; i++) {
+                let sum = 0;
+                let count = 0;
+                
+                for (let j = Math.max(0, i - windowSize + 1); j <= i; j++) {
+                    sum += data[j];
+                    count++;
+                }
+                
+                avgData.push(sum / count);
+            }
+            
+            return avgData;
+        }
+        
+        // Convert temperature to Y coordinate
+        function tempToY(temp) {
+            const range = config.maxTemp - config.minTemp;
+            const pixelsPerDegree = (config.bottomY - config.topY) / range;
+            return config.bottomY - (temp - config.minTemp) * pixelsPerDegree;
+        }
+        
+        // Convert index to X coordinate
+        function indexToX(index) {
+            const step = (config.endX - config.startX) / (config.dataPoints - 1);
+            return config.startX + index * step;
+        }
+        
+        // Find events (crossing thresholds)
+        function findEvents(avgData) {
+            const events = [];
+            
+            for (let i = 1; i < avgData.length; i++) {
+                // Hot threshold crossing
+                if ((avgData[i] > config.hotThreshold && avgData[i-1] <= config.hotThreshold) ||
+                    (avgData[i] <= config.hotThreshold && avgData[i-1] > config.hotThreshold)) {
+                    events.push({
+                        index: i,
+                        type: 'hot',
+                        temp: avgData[i]
+                    });
+                }
+                
+                // Cold threshold crossing
+                if ((avgData[i] < config.coldThreshold && avgData[i-1] >= config.coldThreshold) ||
+                    (avgData[i] >= config.coldThreshold && avgData[i-1] < config.coldThreshold)) {
+                    events.push({
+                        index: i,
+                        type: 'cold',
+                        temp: avgData[i]
+                    });
+                }
+            }
+            
+            return events;
+        }
+        
+        // Animation variables
+        let animationInterval;
+        let currentStep = 0;
+        let temperatures = generateTemperatureData();
+        let avgTemperatures = calculateRunningAverage(temperatures, config.windowSize);
+        let events = findEvents(avgTemperatures);
+        
+        // DOM elements
+        const dataPointsContainer = document.getElementById('dataPoints');
+        const avgPointsContainer = document.getElementById('avgPoints');
+        const eventMarkersContainer = document.getElementById('eventMarkers');
+        const dataFlowContainer = document.getElementById('dataFlow');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // Clear all data points
+        function clearChart() {
+            dataPointsContainer.innerHTML = '';
+            avgPointsContainer.innerHTML = '';
+            eventMarkersContainer.innerHTML = '';
+            dataFlowContainer.innerHTML = '';
+        }
+        
+        // Initialize the chart
+        function initChart() {
+            clearChart();
+            currentStep = 0;
+        }
+        
+        // Update chart with current data
+        function updateChart() {
+            if (currentStep >= config.dataPoints) {
+                stopAnimation();
+                return;
+            }
+            
+            // Add data point
+            const x = indexToX(currentStep);
+            const y = tempToY(temperatures[currentStep]);
+            
+            const dataPoint = document.createElement('div');
+            dataPoint.className = 'data-point';
+            dataPoint.style.left = x + 'px';
+            dataPoint.style.top = y + 'px';
+            dataPointsContainer.appendChild(dataPoint);
+            
+            // Add line to previous point
+            if (currentStep > 0) {
+                const prevX = indexToX(currentStep - 1);
+                const prevY = tempToY(temperatures[currentStep - 1]);
+                
+                const line = document.createElement('div');
+                line.className = 'data-line';
+                
+                // Calculate line position and rotation
+                const length = Math.sqrt(Math.pow(x - prevX, 2) + Math.pow(y - prevY, 2));
+                const angle = Math.atan2(y - prevY, x - prevX) * 180 / Math.PI;
+                
+                line.style.width = length + 'px';
+                line.style.left = prevX + 'px';
+                line.style.top = prevY + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.transformOrigin = '0 0';
+                
+                dataPointsContainer.appendChild(line);
+            }
+            
+            // Add average point
+            const avgY = tempToY(avgTemperatures[currentStep]);
+            
+            const avgPoint = document.createElement('div');
+            avgPoint.className = 'avg-point';
+            avgPoint.style.left = x + 'px';
+            avgPoint.style.top = avgY + 'px';
+            avgPointsContainer.appendChild(avgPoint);
+            
+            // Add line to previous average point
+            if (currentStep > 0) {
+                const prevX = indexToX(currentStep - 1);
+                const prevAvgY = tempToY(avgTemperatures[currentStep - 1]);
+                
+                const avgLine = document.createElement('div');
+                avgLine.className = 'avg-line';
+                
+                // Calculate line position and rotation
+                const length = Math.sqrt(Math.pow(x - prevX, 2) + Math.pow(avgY - prevAvgY, 2));
+                const angle = Math.atan2(avgY - prevAvgY, x - prevX) * 180 / Math.PI;
+                
+                avgLine.style.width = length + 'px';
+                avgLine.style.left = prevX + 'px';
+                avgLine.style.top = prevAvgY + 'px';
+                avgLine.style.transform = `rotate(${angle}deg)`;
+                avgLine.style.transformOrigin = '0 0';
+                
+                avgPointsContainer.appendChild(avgLine);
+            }
+            
+            // Check for events
+            const currentEvents = events.filter(event => event.index === currentStep);
+            currentEvents.forEach(event => {
+                const eventY = tempToY(event.temp);
+                
+                // Add event marker
+                const marker = document.createElement('div');
+                marker.className = `event-marker event-${event.type}`;
+                marker.style.left = x + 'px';
+                marker.style.top = eventY + 'px';
+                eventMarkersContainer.appendChild(marker);
+                
+                // Add event label
+                const label = document.createElement('div');
+                label.className = 'event-label';
+                label.textContent = event.type === 'hot' ? 'Too Hot!' : 'Too Cold!';
+                label.style.left = (x + 15) + 'px';
+                label.style.top = (eventY - 15) + 'px';
+                eventMarkersContainer.appendChild(label);
+            });
+            
+            // Animate data flow
+            if (currentStep % 5 === 0) {
+                // From sensor to data manager
+                animateDataFlow(100, 120, x, y, 'orange');
+                
+                // From data manager to storage
+                setTimeout(() => {
+                    animateDataFlow(x, y, 700, 200, 'purple');
+                }, 500);
+                
+                // Log event if threshold crossed
+                if (currentEvents.length > 0) {
+                    setTimeout(() => {
+                        animateDataFlow(x, y, 400, 350, 'red');
+                    }, 1000);
+                }
+            }
+            
+            currentStep++;
+        }
+        
+        // Animate data flow between components
+        function animateDataFlow(startX, startY, endX, endY, color) {
+            const flow = document.createElement('div');
+            flow.className = 'data-flow';
+            flow.style.left = startX + 'px';
+            flow.style.top = startY + 'px';
+            flow.style.backgroundColor = color;
+            dataFlowContainer.appendChild(flow);
+            
+            // Animate movement
+            const duration = 1000; // 1 second
+            const startTime = Date.now();
+            
+            function moveFlow() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentX = startX + (endX - startX) * progress;
+                const currentY = startY + (endY - startY) * progress;
+                
+                flow.style.left = currentX + 'px';
+                flow.style.top = currentY + 'px';
+                
+                if (progress < 1) {
+                    requestAnimationFrame(moveFlow);
+                } else {
+                    // Remove flow element after animation
+                    setTimeout(() => {
+                        flow.remove();
+                    }, 200);
+                }
+            }
+            
+            requestAnimationFrame(moveFlow);
+        }
+        
+        // Start animation
+        function startAnimation() {
+            if (!animationInterval) {
+                animationInterval = setInterval(updateChart, config.animationSpeed);
+            }
+        }
+        
+        // Stop animation
+        function stopAnimation() {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+        }
+        
+        // Reset animation
+        function resetAnimation() {
+            stopAnimation();
+            initChart();
+            temperatures = generateTemperatureData();
+            avgTemperatures = calculateRunningAverage(temperatures, config.windowSize);
+            events = findEvents(avgTemperatures);
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', startAnimation);
+        stopBtn.addEventListener('click', stopAnimation);
+        resetBtn.addEventListener('click', resetAnimation);
+        
+        // Initialize on load
+        window.addEventListener('load', initChart);
+    </script>
+</body>
+</html>

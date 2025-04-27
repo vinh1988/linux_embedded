@@ -1,0 +1,12 @@
+1 2025-04-19 23:05:07 Connection to SQL server established.
+2 2025-04-19 23:05:07 New table New table sensor_data created created.
+1 2025-04-19 23:08:00 System status: Connections=0, CPU=83.0%, Memory=2 KB
+1 2025-04-19 23:34:16 System status: Connections=0, CPU=83.0%, Memory=2 KB
+1 2025-04-20 00:11:03 System status: Connections=0, CPU=83.0%, Memory=2 KB
+2 2025-04-20 00:11:03 Connection to SQL server established.
+3 2025-04-20 00:11:03 New table New table sensor_data created created.
+1 2025-04-20 00:24:44 System status: Connections=0, CPU=83.0%, Memory=2 KB
+1 2025-04-20 07:53:00 System status: Connections=0, CPU=83.0%, Memory=2 KB
+2 2025-04-20 07:53:00 Connection to SQL server established.
+3 2025-04-20 07:53:00 New table New table sensor_data created created.
+4 2025-04-20 08:06:03 System status: Connections=0, CPU=83.0%, Memory=2 KB

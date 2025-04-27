@@ -1,0 +1,138 @@
+1 2025-04-19 23:34:53 Connection to SQL server established.
+2 2025-04-19 23:34:53 New table New table sensor_data created created.
+3 2025-04-19 23:34:57 System status: Connections=0, CPU=86.0%, Memory=3 KB
+4 2025-04-19 23:35:02 System status: Connections=0, CPU=77.0%, Memory=3 KB
+5 2025-04-19 23:35:07 System status: Connections=0, CPU=15.0%, Memory=3 KB
+6 2025-04-19 23:35:12 System status: Connections=0, CPU=93.0%, Memory=3 KB
+7 2025-04-19 23:35:17 System status: Connections=0, CPU=35.0%, Memory=3 KB
+8 2025-04-19 23:35:22 System status: Connections=0, CPU=86.0%, Memory=3 KB
+9 2025-04-19 23:35:27 System status: Connections=0, CPU=92.0%, Memory=3 KB
+10 2025-04-19 23:35:32 System status: Connections=0, CPU=49.0%, Memory=3 KB
+11 2025-04-19 23:35:37 System status: Connections=0, CPU=21.0%, Memory=3 KB
+12 2025-04-19 23:35:42 System status: Connections=0, CPU=62.0%, Memory=3 KB
+13 2025-04-19 23:35:47 System status: Connections=0, CPU=27.0%, Memory=3 KB
+14 2025-04-19 23:35:52 System status: Connections=0, CPU=90.0%, Memory=3 KB
+15 2025-04-19 23:35:57 System status: Connections=0, CPU=59.0%, Memory=3 KB
+16 2025-04-19 23:36:02 System status: Connections=0, CPU=63.0%, Memory=3 KB
+17 2025-04-19 23:36:04 A sensor node with 0 has opened a new connection
+18 2025-04-19 23:36:04 Connection authenticated successfully
+19 2025-04-19 23:36:04 Received sensor data with invalid sensor node ID 21825
+20 2025-04-19 23:36:05 Received sensor data with invalid sensor node ID 28531
+21 2025-04-19 23:36:07 System status: Connections=1, CPU=26.0%, Memory=3 KB
+22 2025-04-19 23:36:07 Received sensor data with invalid sensor node ID 28704
+23 2025-04-19 23:36:09 Received sensor data with invalid sensor node ID 12644
+24 2025-04-19 23:36:11 Received sensor data with invalid sensor node ID 14091
+25 2025-04-19 23:36:12 System status: Connections=1, CPU=40.0%, Memory=3 KB
+26 2025-04-19 23:36:13 Received sensor data with invalid sensor node ID 59998
+27 2025-04-19 23:36:13 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+28 2025-04-19 23:36:13 IP 127.0.0.1 added to blacklist
+1 2025-04-19 23:40:50 Connection to SQL server established.
+2 2025-04-19 23:40:50 New table New table sensor_data created created.
+3 2025-04-19 23:40:54 System status: Connections=0, CPU=86.0%, Memory=3 KB
+4 2025-04-19 23:40:59 System status: Connections=0, CPU=77.0%, Memory=3 KB
+5 2025-04-19 23:41:04 System status: Connections=0, CPU=15.0%, Memory=3 KB
+6 2025-04-19 23:41:09 A sensor node with 0 has opened a new connection
+7 2025-04-19 23:41:09 Connection authenticated successfully
+8 2025-04-19 23:41:09 Received sensor data with invalid sensor node ID 21825
+9 2025-04-19 23:41:09 System status: Connections=1, CPU=93.0%, Memory=3 KB
+10 2025-04-19 23:41:10 Received sensor data with invalid sensor node ID 28531
+11 2025-04-19 23:41:12 Received sensor data with invalid sensor node ID 28704
+12 2025-04-19 23:41:14 Received sensor data with invalid sensor node ID 12644
+13 2025-04-19 23:41:14 System status: Connections=1, CPU=35.0%, Memory=3 KB
+14 2025-04-19 23:41:16 Received sensor data with invalid sensor node ID 12576
+15 2025-04-19 23:41:18 Received sensor data with invalid sensor node ID 14132
+16 2025-04-19 23:41:18 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+17 2025-04-19 23:41:18 IP 127.0.0.1 added to blacklist
+18 2025-04-19 23:41:19 System status: Connections=1, CPU=86.0%, Memory=3 KB
+19 2025-04-19 23:41:20 Received sensor data with invalid sensor node ID 11829
+20 2025-04-19 23:41:20 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+21 2025-04-19 23:41:22 Received sensor data with invalid sensor node ID 14384
+22 2025-04-19 23:41:22 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+23 2025-04-19 23:41:24 Received sensor data with invalid sensor node ID 16724
+24 2025-04-19 23:41:24 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+25 2025-04-19 23:41:24 System status: Connections=1, CPU=92.0%, Memory=3 KB
+26 2025-04-19 23:41:26 Received sensor data with invalid sensor node ID 8240
+27 2025-04-19 23:41:26 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+28 2025-04-19 23:41:28 Received sensor data with invalid sensor node ID 12336
+29 2025-04-19 23:41:28 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+30 2025-04-19 23:41:29 System status: Connections=1, CPU=49.0%, Memory=3 KB
+31 2025-04-19 23:41:30 Received sensor data with invalid sensor node ID 13620
+32 2025-04-19 23:41:30 IP 127.0.0.1 blacklisted after sending multiple invalid data packets
+33 2025-04-19 23:41:31 Connection attempt from blacklisted IP
+34 2025-04-19 23:41:34 System status: Connections=1, CPU=21.0%, Memory=3 KB
+35 2025-04-19 23:41:39 System status: Connections=1, CPU=62.0%, Memory=3 KB
+36 2025-04-19 23:41:44 System status: Connections=1, CPU=27.0%, Memory=3 KB
+37 2025-04-19 23:41:49 System status: Connections=1, CPU=90.0%, Memory=3 KB
+38 2025-04-19 23:41:54 System status: Connections=1, CPU=59.0%, Memory=3 KB
+39 2025-04-19 23:41:59 System status: Connections=1, CPU=63.0%, Memory=3 KB
+40 2025-04-19 23:42:04 System status: Connections=1, CPU=26.0%, Memory=3 KB
+41 2025-04-19 23:42:09 System status: Connections=1, CPU=40.0%, Memory=3 KB
+42 2025-04-19 23:42:14 System status: Connections=1, CPU=26.0%, Memory=3 KB
+43 2025-04-19 23:42:19 System status: Connections=1, CPU=72.0%, Memory=3 KB
+44 2025-04-19 23:42:24 System status: Connections=1, CPU=36.0%, Memory=3 KB
+45 2025-04-19 23:42:29 System status: Connections=1, CPU=11.0%, Memory=3 KB
+46 2025-04-19 23:42:34 System status: Connections=1, CPU=68.0%, Memory=3 KB
+47 2025-04-19 23:42:39 System status: Connections=1, CPU=67.0%, Memory=3 KB
+48 2025-04-19 23:42:44 System status: Connections=1, CPU=29.0%, Memory=3 KB
+49 2025-04-19 23:42:49 System status: Connections=1, CPU=82.0%, Memory=3 KB
+50 2025-04-19 23:42:54 System status: Connections=1, CPU=30.0%, Memory=3 KB
+51 2025-04-19 23:42:59 System status: Connections=1, CPU=62.0%, Memory=3 KB
+52 2025-04-19 23:43:04 System status: Connections=1, CPU=23.0%, Memory=3 KB
+53 2025-04-19 23:43:09 System status: Connections=1, CPU=67.0%, Memory=3 KB
+54 2025-04-19 23:43:14 System status: Connections=1, CPU=35.0%, Memory=3 KB
+55 2025-04-19 23:43:19 System status: Connections=1, CPU=29.0%, Memory=3 KB
+56 2025-04-19 23:43:24 System status: Connections=1, CPU=2.0%, Memory=3 KB
+57 2025-04-19 23:43:29 System status: Connections=1, CPU=22.0%, Memory=3 KB
+58 2025-04-19 23:43:34 System status: Connections=1, CPU=58.0%, Memory=3 KB
+59 2025-04-19 23:43:39 System status: Connections=1, CPU=69.0%, Memory=3 KB
+60 2025-04-19 23:43:44 System status: Connections=1, CPU=67.0%, Memory=3 KB
+61 2025-04-19 23:43:49 System status: Connections=1, CPU=93.0%, Memory=3 KB
+62 2025-04-19 23:43:54 System status: Connections=1, CPU=56.0%, Memory=3 KB
+63 2025-04-19 23:43:59 System status: Connections=1, CPU=11.0%, Memory=3 KB
+64 2025-04-19 23:44:04 System status: Connections=1, CPU=42.0%, Memory=3 KB
+65 2025-04-19 23:44:09 System status: Connections=1, CPU=29.0%, Memory=3 KB
+66 2025-04-19 23:44:14 System status: Connections=1, CPU=73.0%, Memory=3 KB
+67 2025-04-19 23:44:19 System status: Connections=1, CPU=21.0%, Memory=3 KB
+68 2025-04-19 23:44:21 The sensor node with 0 has closed the connection
+1 2025-04-20 00:01:11 Connection to SQL server established.
+2 2025-04-20 00:01:11 New table New table sensor_data created created.
+3 2025-04-20 00:01:15 System status: Connections=0, CPU=86.0%, Memory=3 KB
+4 2025-04-20 00:01:20 System status: Connections=0, CPU=77.0%, Memory=3 KB
+5 2025-04-20 00:01:25 System status: Connections=0, CPU=15.0%, Memory=3 KB
+6 2025-04-20 00:01:30 System status: Connections=0, CPU=93.0%, Memory=3 KB
+7 2025-04-20 00:01:35 A sensor node with 0 has opened a new connection
+8 2025-04-20 00:01:35 Connection authenticated successfully
+9 2025-04-20 00:01:35 User sensor_user authenticated from 127.0.0.1
+10 2025-04-20 00:01:35 System status: Connections=1, CPU=35.0%, Memory=3 KB
+11 2025-04-20 00:01:40 System status: Connections=1, CPU=86.0%, Memory=3 KB
+12 2025-04-20 00:01:45 System status: Connections=1, CPU=92.0%, Memory=3 KB
+13 2025-04-20 00:01:50 System status: Connections=1, CPU=49.0%, Memory=3 KB
+14 2025-04-20 00:01:55 System status: Connections=1, CPU=21.0%, Memory=3 KB
+15 2025-04-20 00:02:00 System status: Connections=1, CPU=62.0%, Memory=3 KB
+1 2025-04-20 00:12:15 Connection to SQL server established.
+2 2025-04-20 00:12:15 New table New table sensor_data created created.
+3 2025-04-20 00:12:19 System status: Connections=0, CPU=86.0%, Memory=3 KB
+4 2025-04-20 00:12:20 A sensor node with 0 has opened a new connection
+5 2025-04-20 00:12:20 Connection authenticated successfully
+6 2025-04-20 00:12:20 User sensor_user authenticated from 127.0.0.1
+7 2025-04-20 00:12:24 System status: Connections=1, CPU=77.0%, Memory=3 KB
+8 2025-04-20 00:12:29 System status: Connections=1, CPU=15.0%, Memory=3 KB
+9 2025-04-20 00:12:34 System status: Connections=1, CPU=93.0%, Memory=3 KB
+10 2025-04-20 00:12:39 System status: Connections=1, CPU=35.0%, Memory=3 KB
+11 2025-04-20 00:12:44 System status: Connections=1, CPU=86.0%, Memory=3 KB
+12 2025-04-20 00:12:49 System status: Connections=1, CPU=92.0%, Memory=3 KB
+1 2025-04-20 00:22:30 System status: Connections=0, CPU=83.0%, Memory=2 KB
+1 2025-04-20 00:25:48 System status: Connections=0, CPU=83.0%, Memory=2 KB
+2 2025-04-20 00:25:48 Connection to SQL server established.
+3 2025-04-20 00:25:48 New table New table sensor_data created created.
+4 2025-04-20 07:53:20 System status: Connections=0, CPU=83.0%, Memory=1 KB
+1 2025-04-20 07:53:20 Connection to SQL server established.
+2 2025-04-20 07:53:20 New table New table sensor_data created created.
+1 2025-04-20 08:06:50 Connection to SQL server established.
+2 2025-04-20 08:06:50 New table New table sensor_data created created.
+3 2025-04-20 08:09:46 System status: Connections=0, CPU=83.0%, Memory=2 KB
+1 2025-04-20 08:09:46 Connection to SQL server established.
+2 2025-04-20 08:09:46 New table New table sensor_data created created.
+3 2025-04-20 08:31:32 System status: Connections=0, CPU=83.0%, Memory=2 KB
+1 2025-04-20 08:31:32 Connection to SQL server established.
+2 2025-04-20 08:31:32 New table New table sensor_data created created.

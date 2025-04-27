@@ -1,0 +1,47 @@
+INSTRUCTIONS FOR CREATING TEMPERATURE MEASUREMENT VISUALIZATION
+
+To create the temperature_measurement.png file for your sensor gateway project, follow these steps:
+
+1. VISUALIZATION DESCRIPTION
+   The temperature_measurement.png should visualize:
+   - Raw temperature readings from sensor nodes
+   - Running average temperature (calculated over 5 samples)
+   - "Too hot" threshold line at 30°C
+   - "Too cold" threshold line at 10°C
+   - Annotations for temperature events (when temperature crosses thresholds)
+
+2. CREATING THE VISUALIZATION
+   Option 1: Using a graphing tool (recommended)
+   - Use a tool like Excel, Google Sheets, or any graphing software
+   - Create a line chart with two series:
+     a) Raw temperature data (black line)
+     b) Running average (green line, thicker)
+   - Add horizontal lines for the thresholds:
+     a) Red line at 30°C labeled "Too Hot"
+     b) Blue line at 10°C labeled "Too Cold"
+   - Add annotations for events where the running average crosses thresholds
+   - Add a title: "Sensor Gateway Temperature Measurement"
+   - Add axis labels: "Time" for X-axis, "Temperature (°C)" for Y-axis
+   - Add a legend explaining the lines
+   - Export as PNG named "temperature_measurement.png"
+
+   Option 2: Using a drawing tool
+   - Use a tool like Draw.io, Inkscape, or any drawing software
+   - Draw axes for time and temperature
+   - Draw the temperature curves and threshold lines as described above
+   - Add appropriate labels and annotations
+   - Export as PNG named "temperature_measurement.png"
+
+3. VISUALIZATION CONTENT
+   The visualization should illustrate the following aspects of the sensor gateway:
+   - How the connection manager receives raw temperature data
+   - How the data manager calculates running averages
+   - How temperature thresholds are used to detect "too hot" or "too cold" conditions
+   - How these events are logged by the log process
+   - How all data is stored in the SQLite database
+
+4. PLACEMENT
+   Save the final PNG file as:
+   /home/os/Documents/data/code/embedded_linux/linux_embedded/linux_embedded/final/temperature_measurement.png
+
+This visualization will help users understand how the sensor gateway processes temperature data and detects threshold events.

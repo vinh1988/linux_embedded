@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant Writer
+    participant SharedMemory
+    participant Reader
+
+    note over Writer, Reader: System V Shared Memory
+
+    Writer->>SharedMemory: ftok("shmfile", 65) - Generate key
+    Writer->>SharedMemory: shmget(key, 1024, 0666 | IPC_CREAT) - Create shared memory segment
+    Writer->>SharedMemory: shmat(shmid, NULL, 0) - Attach to shared memory
+    Writer->>SharedMemory: strcpy(str, "Hi from writer process!") - Write data
+    Writer->>SharedMemory: shmdt(str) - Detach from shared memory
+
+    Reader->>SharedMemory: ftok("shmfile", 65) - Generate key
+    Reader->>SharedMemory: shmget(key, 1024, 0666) - Get shared memory segment
+    Reader->>SharedMemory: shmat(shmid, NULL, 0) - Attach to shared memory
+    Reader->>SharedMemory: Read data
+    Reader->>SharedMemory: shmdt(str) - Detach from shared memory
+    Reader->>SharedMemory: shmctl(shmid, IPC_RMID, NULL) - Remove shared memory segment
+    
+    note over Reader, SharedMemory: Reader removes the shared memory segment

@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant Process1
+    participant SharedMemory
+    participant Process2
+
+    note over Process1, Process2: POSIX Anonymous Shared Memory
+
+    Process1->>SharedMemory: shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666) - Create shared memory object
+    Process1->>SharedMemory: ftruncate(shm_fd, SIZE) - Set shared memory size
+    Process1->>SharedMemory: mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0) - Map shared memory
+    Process1->>SharedMemory: Write data
+
+    Process2->>SharedMemory: shm_open(SHM_NAME, O_RDWR, 0666) - Open shared memory object
+    Process2->>SharedMemory: mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0) - Map shared memory
+    Process2->>SharedMemory: Read data
+
+    Process1->>SharedMemory: munmap(shared_memory, SIZE) - Unmap shared memory
+    Process2->>SharedMemory: munmap(shared_memory, SIZE) - Unmap shared memory
+    Process1->>SharedMemory: shm_unlink(SHM_NAME) - Remove shared memory object

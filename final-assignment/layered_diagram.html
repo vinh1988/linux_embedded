@@ -1,0 +1,115 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>layered_diagram</title>
+            <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+            <script>
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default',
+                    securityLevel: 'loose',
+                });
+            </script>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    text-align: center;
+                }
+                .mermaid {
+                    margin: 0 auto;
+                    max-width: 100%;
+                }
+                .instructions {
+                    margin-top: 20px;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    border-radius: 5px;
+                    display: inline-block;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>layered_diagram</h1>
+            <div class="mermaid">
+%%{init: {'theme': 'default', 'flowchart': {'htmlLabels': true, 'curve': 'basis', 'diagramPadding': 50, 'useMaxWidth': false, 'width': 1200, 'height': 900}, 'fontSize': 20} }%%
+flowchart TB
+    %% External Layer
+    subgraph External["External Systems"]
+        SensorNodes["Sensor Nodes"]
+        Visualization["Visualization Tools"]
+        User["User Interface"]
+    end
+    
+    %% Interface Layer
+    subgraph Interface["Interface Layer"]
+        TCP["TCP Socket Interface"]
+        CommandLine["Command Line Interface"]
+        FIFO["FIFO Interface"]
+    end
+    
+    %% Core Layer
+    subgraph Core["Core Components"]
+        ConnMgr["Connection Manager"]
+        DataMgr["Data Manager"]
+        StorageMgr["Storage Manager"]
+        StatusMgr["Status Manager"]
+        SecurityMgr["Security Manager"]
+    end
+    
+    %% Data Layer
+    subgraph Data["Data Layer"]
+        SharedData["Shared Memory"]
+        Database["SQLite Database"]
+        LogFile["Log File"]
+        Blacklist["IP Blacklist"]
+    end
+    
+    %% Connections between layers
+    SensorNodes --> TCP
+    User --> CommandLine
+    
+    TCP --> ConnMgr
+    CommandLine --> StatusMgr
+    
+    ConnMgr --> SharedData
+    ConnMgr --> SecurityMgr
+    DataMgr --> SharedData
+    StorageMgr --> SharedData
+    StorageMgr --> Database
+    StatusMgr --> SharedData
+    
+    ConnMgr & DataMgr & StorageMgr & StatusMgr & SecurityMgr --> FIFO
+    
+    FIFO --> LogFile
+    SecurityMgr --> Blacklist
+    
+    Database --> Visualization
+    
+    %% Style definitions
+    classDef external fill:#f9d5e5,stroke:#333,stroke-width:3px,font-size:22px,padding:15px;
+    classDef interface fill:#eeac99,stroke:#333,stroke-width:3px,font-size:22px,padding:15px;
+    classDef core fill:#e06377,stroke:#333,stroke-width:3px,font-size:22px,padding:15px;
+    classDef data fill:#5b9aa0,stroke:#333,stroke-width:3px,font-size:22px,padding:15px;
+    classDef subgraph fill:none,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold;
+    
+    %% Apply styles
+    class SensorNodes,Visualization,User external;
+    class TCP,CommandLine,FIFO interface;
+    class ConnMgr,DataMgr,StorageMgr,StatusMgr,SecurityMgr core;
+    class SharedData,Database,LogFile,Blacklist data;
+    class External,Interface,Core,Data subgraph;
+            </div>
+            <div class="instructions">
+                <p>To save as PNG:</p>
+                <ol>
+                    <li>Right-click on the diagram</li>
+                    <li>Select "Save image as..."</li>
+                    <li>Save with filename "layered_diagram.png"</li>
+                </ol>
+            </div>
+        </body>
+        </html>
+        
